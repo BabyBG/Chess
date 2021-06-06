@@ -1,0 +1,40 @@
+<html>
+    <head>
+       <meta charset="utf-8"/> 
+       <link rel = stylesheet href = "base_game/chess.css">
+    </head>
+    <body>
+        <div class = "mainContainer" id = "mainContainer">
+            <div class = "subContainer" id = "subContainer">
+                <div class = "options" id = "options">
+                    <h3>White Player (AI not optimised)</h3>
+                    <input type = "radio" id = "whiteHuman" name = "whiteRadio" onclick = "humanOrCpu(true, true)">
+                    <label for = "Human">Human</label>
+                    <input type = "radio" id = "whiteCpu" name = "whiteRadio" onclick = "humanOrCpu(true, false)">
+                    <label for = "AI">AI</label>
+                    <h3>Black Player (AI not optimised)</h3>
+                    <input type = "radio" id = "blackHuman" name = "blackRadio" onclick = "humanOrCpu(false, true)">
+                    <label for = "Human">Human</label>
+                    <input type = "radio" id = "blackCpu" name = "blackRadio" onclick = "humanOrCpu(false, false)">
+                    <label for = "AI">AI</label><br>
+                    <br>
+                    <button type = "button">Undo previous move(under construction)</button><br>
+                    <br>
+                    <div>Show last 5-10 moves here with a button that displays all moves (under construction)</div><br>
+                    <div>Button to reset board & start new game (under construction)</div>
+                    <br>
+                    <div class = "takenContainer" id = "takenContainer"></div>
+                </div>
+            </div>
+        </div>
+        <script src = "base_game/make_grid.js"></script>
+        <script src = "base_game/pieces.js"></script>
+        <script src = "base_game/movement.js"></script>
+        <script src = "base_game/checkMoveRemoval.js"></script>
+        <script src = "base_game/execute_movement.js"></script>
+        <script src = "base_game/turn_order.js"></script>
+        <script src = "ai_files/ai_master.js"></script>
+        <script src = "ai_files/ai_getmove.js"></script>
+        <script src = "ai_files/ai_position_scoring.js"></script>
+    </body>
+</html>
