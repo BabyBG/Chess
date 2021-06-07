@@ -7,3 +7,7 @@ Version 0.1
 - AI can't recognise checkmate or stalemates as a favourable/unfavourable outcome
 - AI doesn't factor pawns reaching the backline in it's evaluation
 - Various AI functions not fully stable and cause freezes. Have not fully explored which are unreliable. 
+
+0.2
+
+- Fixed bug causing computer to crash when evaluating checkmates
