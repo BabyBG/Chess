@@ -46,4 +46,4 @@ function masterAISequence(aIPlayer) {
   turnSequence();
 }
 
- //GAME BREAKING WHEN CPU TRIES TO TAKE A PIECE. PIECE ISNT TAKEN & TURN IS CONSUMED
+//add move randomiser if move scores are equal or very close

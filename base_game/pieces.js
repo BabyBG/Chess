@@ -46,7 +46,7 @@ class Bishop {
 }
 
 class Rook {
-  constructor(color, startPosition, kingSide) {
+  constructor(color, startPosition) {
     this.color = color;
     this.position = startPosition;
     this.hasMoved = false;

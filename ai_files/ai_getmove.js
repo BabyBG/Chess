@@ -24,17 +24,31 @@ function getMove(aIPlayer) {
   //currently cpu is very focused into baiting an attack that will never happen
   //also that weird thing with knight moving back to starting position on g1 when under attack (and supported)
   let likelySecondEnemy = getLikelyMoves(secondRawData, enemyPlayer);
+  //console.log("likelySecondEnemy")
+  //console.log(likelySecondEnemy)
   let secondParsedLikely = parseLikelyIntoPass(likelySecondEnemy);
+  //console.log("secondParsedLikely")
+  //console.log(secondParsedLikely)
   let thirdRawData = getSingleState(secondParsedLikely, aIPlayer.activePieces);
+  //console.log("thirdRawData")
+  //console.log(thirdRawData)
   let likelyThirdFriendly = getLikelyMoves(thirdRawData, aIPlayer);
+  //console.log("likelyThirdFriendly")
+  //console.log(likelyThirdFriendly)
   let thirdParsedLikely = parseLikelyIntoPass(likelyThirdFriendly);
+  //console.log("thirdParsedLikely")
+  //console.log(thirdParsedLikely)
   let fourthRawData = getSingleState(thirdParsedLikely, aIPlayer.enemyPieces);
+  //console.log("fourthRawData")
+  //console.log(fourthRawData)
   let likelyFourthEnemy = getLikelyMoves(fourthRawData, enemyPlayer);
+  //console.log("likelyFourthEnemy")
+  //console.log(likelyFourthEnemy)
   let fourthParsedLikely = parseLikelyIntoPass(likelyFourthEnemy);
   evaluateBoard(fourthParsedLikely, evaluatedMoves, initialPoints, aIPlayer);
+  console.log(evaluatedMoves);
   setState(masterReset);
   calcPossibleMoves();
- 
   return getFinalMove(evaluatedMoves, aIPlayer.activePieces);
 }
 
@@ -43,7 +57,10 @@ function getMove(aIPlayer) {
 function getSingleState(pass, pieceSet) {
   let newPass = pass.map(piece => {
     let overwriteMove = piece.map(move => {
-      let newMoves = move.map(state => [state, useSingleState(state, pieceSet)]);
+      let newMoves = move.map(state => {
+        let temp = [state, useSingleState(state, pieceSet)]
+        return temp //[state, useSingleState(state, pieceSet)]
+      });
       //state is outside scope here but needed
       return newMoves;
     })
@@ -52,21 +69,23 @@ function getSingleState(pass, pieceSet) {
   return newPass;
 }
 
-//return [false, tempToPush, move];
-
 //takes a single board state, calculates new moves for all pieces & checks if game is over 
 //returns all possible board states
 function useSingleState(singleState, pieceSet) {
-  if (singleState[0] == true) return singleState;
+  if (singleState[0].bool == true) {
+    //not 100% about the noMoves return - making copies of a finished board state could skew move scoring
+    //couldnt think of a solution where the CPU stops examining while not causing crashes later down the line
+    let noMoves = pieceSet.map(o => [[singleState]]);
+    return noMoves;
+  }
   setState(singleState[1]);
   calcPossibleMoves();
   let gameOver = isGameOver(pieceSet.find(o => o.constructor.name == "King"), pieceSet);
-  if (gameOver.stalemate == true || gameOver.whiteCheckmated == true || gameOver.blackCheckmated == true) {
-    //add true marker to show grid state is at end of line
-    singleState[0] = true;
-    singleState.push(gameOver);
-    //NOTE THAT IF GAME IS OVER ONLY A SINGLE BOARD STATE IS RETURNED NOT MULTIPLES (FOR SCORING)
-    return singleState;
+  if (gameOver.bool == true) {
+    //add true marker to show grid state has no moves to make
+    singleState[0] = gameOver;
+    let noMoves = pieceSet.map(o => [[singleState]]);
+    return noMoves;
   }
   let potentialStates = pieceSet.map(piece => {
     let resetState = allPieces.map(o => [o.position, o.hasMoved, o.enPassant]);
@@ -84,7 +103,6 @@ function useSingleState(singleState, pieceSet) {
 
 //score likeliest responses to each grid state
 function getLikelyMoves(rawData, enemyPlayer) {
-  //need another reset point for friendly piece?
   let resetAtEnd = allPieces.map(piece => [piece.position, piece.hasMoved, piece.enPassant]);
   let response = rawData.map(fPiece => {
     let overwriteFPiece = fPiece.map(fMove => {
@@ -101,7 +119,7 @@ function getLikelyMoves(rawData, enemyPlayer) {
   return response;
 }
 
-//converts heavily nested likelyMoves data into useable pass format for board state generation
+//converts heavily nested likelyMoves data into pass format for board state generation
 function parseLikelyIntoPass(likelyResponse) {
   let allMoves = likelyResponse.map(fPiece => { 
     let overwriteFPiece = fPiece.map(fMove => {
@@ -142,6 +160,8 @@ function parseLikelyIntoPass(likelyResponse) {
   return returnPass;
 }
 
+//Picks how many moves should be considered 'likely' based on total number of moves available.
+//The actual numbers could be reduced a bit after the scoring is less influenced by piece-baiting
 function numberMovesNeeded(moveArrayLength) {
   let x = 0
   if (moveArrayLength < 7) {
@@ -173,7 +193,7 @@ function evaluateBoard(pass, assessed, init, player) {
   for (i = 0; i < pass.length; i++) {
     for (j = 0; j < pass[i].length; j++) {
       pass[i][j].forEach(state => {
-        if (state[0] == false) {
+        if (state[0].bool == false) {
           //I have NO IDEA why 'i' keeps setting to 32 after materialState function
           let k = i;
           let points = materialState(state[1]);
@@ -185,10 +205,9 @@ function evaluateBoard(pass, assessed, init, player) {
           assessed[i][j].score += scorePositions(player)
         } else {
           //assess whether this game over is benefical or not
-          //based on just material score, not material + positional
+          //based on just material score or both material & positional?
         }
       })
-
     }
   }
   //reset board state here? a little higher up in the function maybe?
@@ -208,6 +227,7 @@ function materialState(state) {
 function compareMaterial(points, oldDif, playerColour) {
   playerColour == "white" ? newDif = points.white - points.black : newDif = points.black - points.white;
   let score = newDif - oldDif;
+  //rough draft alternative scoring method option below, instead of absolute material value
   /*
   let score = 0
   playerColour == "white" ? newDif = points.white - points.black : newDif = points.black - points.white;
@@ -254,7 +274,7 @@ function getFinalMove(assessed, pieceSet) {
 //////////////////////////////////////////////////////////////
 
 //data passed by 'useSingleState' function. That function uses the whole board state, this one works through a single piece &
-//returns any changes it's moves cause to itself and other pieces in terms of position/taking
+//move at a time and returns any changes that moves cause to itself and other pieces in terms of position/taking
 function virtualMove(piece, move, resetState) {
   let tempToPush = [];
   isEnPassant(piece, move);
@@ -267,7 +287,8 @@ function virtualMove(piece, move, resetState) {
     tempToPush.push([allPieces[i].position, allPieces[i].hasMoved, allPieces[i].enPassant]);
   }
   setState(resetState, allPieces);
-  return [false, tempToPush, move];
+  let gameOver = {bool: false, stalemate: false, whiteCheckmated: false, blackCheckmated: false};
+  return [gameOver, tempToPush, move]; //was return [false, tempToPush, move];
 }
 
 //was this virtualMove castling? moves rook to appropriate spot and sets rook.hasMoved = true
@@ -279,7 +300,7 @@ function virtualCastle(piece, move) {
   }
 }
 
-//set each piece in allPieces to position called for by board state , hasMoved status & enPassant status, if applicable
+//set each piece in allPieces to position called for by board state, hasMoved status & enPassant status, if applicable
 function setState(desiredState) {
   for (i = 0; i < allPieces.length; i++) {
     allPieces[i].position = desiredState[i][0] //position
@@ -297,10 +318,9 @@ function setState(desiredState) {
 //make initial assessedStates
 function makeInitialAssess(pass) {
   let assessed = pass.map(fPiece => {
-    if (fPiece == undefined) console.log(pass);
     let overwritePiece = fPiece.map(move => {
       let newMove = {id: move[0][2], score: 0, state: move[0][1], gameOver: move[0][0]};
-      return newMove
+      return newMove;
     })
     return overwritePiece;
   })

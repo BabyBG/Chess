@@ -31,25 +31,29 @@ function turnSequence(AIswitch = false) {
 
 //in current board state is the game stalemated or checkmated?
 function isGameOver(friendlyKing, activePieces) {
-  let gameOver = {whiteCheckmated: false, blackCheckmated: false, stalemate: false}
+  let gameOver = {whiteCheckmated: false, blackCheckmated: false, stalemate: false, bool: false}
   //if king is checked && no valid moves => checkmate and end game
   if (friendlyKing.inCheck != false && activePieces.every(o => o.possibleMoves[0] == undefined)) {
     friendlyKing.color == "white" ? gameOver.whiteCheckmated = true : gameOver.blackCheckmated = true;
+    gameOver.bool = true;
     return gameOver;
   }
   //if king is not in check && no valid moves => stalemate and draw game
   if (friendlyKing.inCheck == false && activePieces.every(o => o.possibleMoves[0] == undefined)) {
     gameOver.stalemate = true;
+    gameOver.bool = true;
     return gameOver;
   }
   //if no piece taken or pawn moved for fifty turns => stalemate and draw game
   if (fiftyMoveStalemate >= 100) {
     gameOver.stalemate = true;
+    gameOver.bool = true;
     return gameOver;
   }
   //if same position repeated 3 times => stalemate and draw game
   if (comparePositionStalemate(threefoldRep) == true) {
     gameOver.stalemate = true;
+    gameOver.bool = true;
     return gameOver;
   }
   return gameOver;

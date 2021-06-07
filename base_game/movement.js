@@ -301,7 +301,7 @@ function kingSideCastling(king, isClear, kSideR) {
   }
 }
 
-//to calculate piece.blockEnemyKing for bishops, rooks and queens
+//to calculate piece.blockEnemyKing for bishops, rooks and queens, used later in check calculations
 function linearKingBlocking(piece, moves) {
   if (moves.length === 0) {
     return;
@@ -327,7 +327,7 @@ function linearKingBlocking(piece, moves) {
   })
 }
 
-//'linearCollision' is used for horizontal, vertical and diagonal collision
+//'linearCollision' is used for horizontal, vertical and diagonal collision while moving
 function linearCollision(piece, moves) {
   //if piece is completely blocked from moving immediately return '[]' to avoid exception throw
   if (moves.length === 0) {
