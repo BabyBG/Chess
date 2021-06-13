@@ -1,3 +1,7 @@
+//variable to track whether enPassant is available
+//controlled by isEnPassant() on this page
+let enPassantVulnerable = false;
+
 ////////////////////////////////////////////////////
 //FUNCTIONS FOR PICKING UP AND PUTTING DOWN PIECES//
 ////////////////////////////////////////////////////
@@ -10,7 +14,7 @@ function drag(ev) {
   ev.dataTransfer.setData("piece", ev.target.id);
   //highlight 'possibleMoves' for dragged piece on the board
   let piece = allPieces.find(o => o.id == ev.target.id);
-  if (piece.color == activePlayer.color) {
+  if (piece.whiteColor == activePlayer.whiteColor) {
     allSquares.forEach(cell => {
       if (piece.possibleMoves.includes(cell)) {
         getCell = document.getElementById(cell)
@@ -24,6 +28,7 @@ function drag(ev) {
   }
 }
 
+//Messy function, can be cleaned up
 //Confirms drag move, reassigns position of moved piece, removes any taken piece
 function drop(ev) {
   ev.preventDefault();
@@ -31,6 +36,10 @@ function drop(ev) {
   let data = ev.dataTransfer.getData("piece");
   let newPiece = document.getElementById(data)
   let piece = allPieces.find(o => o.id == newPiece.id)
+  //find piece in the position_arrays.js
+  let positionArrays = [];
+  piece.constructor.name == "Pawn" && piece.whiteColor == true ? positionArrays = whitePawnArrays : positionArrays = blackPawnArrays;
+  let positionData = positionArrays.find(o => o.square == piece.position)
   let target = ev.target.id;
   //CANT REMEMBER WHAT THIS IF STATEMENT IS FOR ANYMORE, SEEMS IMPORTANT? ANNOTATE YOUR WORK
   if (ev.target.id.length > 2) {
@@ -38,7 +47,7 @@ function drop(ev) {
     target = convertToPiece.position
   }
   //Prevent self-taking, check piece is correct colour & move is valid
-  if (newPiece.id !== ev.target.id && piece.color == activePlayer.color && piece.possibleMoves.includes(target)) {
+  if (newPiece.id !== ev.target.id && piece.whiteColor == activePlayer.whiteColor && piece.possibleMoves.includes(target)) {
     removeHighlights(true);
     //if piece already present in cell remove it & place incoming piece
     if (ev.target.nodeName == "IMG") {
@@ -50,10 +59,11 @@ function drop(ev) {
     } else {
       //if this is a castling move, place the rook into appropriate position
       castleRook(newPiece, ev.target.id)
+      //pawnDiagonal(piece, [], cellIsBlank)
       //if this move was taking via en passant, remove the taken pawn
-      //and then an extra if statement, as below, to check that the en passant move was actually taken
-      if (piece.moveTakesPiece.find(o => o.id == target) != undefined && pawnDiagonal(piece, [], cellIsBlank).includes(ev.target.id)) {
-        takenEnPassant(piece.offenseEnPassant)
+      if (piece.moveTakesPiece.find(o => o.id == target) != undefined 
+      && positionData.diagonal.includes(ev.target.id)) {
+        takenEnPassant(enPassantVulnerable);
       } else {
       //if this move is vulnerable to en passant, set pawn.enPassant = true, else set all to false
       //and also reverts all pawn.enPassant states to their ORIGINAL (not necessarily all false)
@@ -71,17 +81,16 @@ function drop(ev) {
   }
 }
 
-//Delete game piece image from cell & piece data from array. Sets piece location to "taken" & add to side of board
+//Delete game piece image from cell & piece data from array. Sets piece location to false & add to side of board
 function removeNode(node) {
   imageCoord = allPieces.find(o => o.id === node.id) 
-  imageCoord.position = "taken"
+  imageCoord.position = false
   deleteFromData(imageCoord)
   node.parentNode.removeChild(node);
-  //split into different function
-  //doesnt currently proc for enPassant
   let img = document.createElement("img");
   img.className = "takenPiece";
-  img.src = imageCoord.color + "_pieces/" + imageCoord.constructor.name + ".svg";
+  imageCoord.whiteColor == true ? color = "white" : color = "black";
+  img.src = color + "_pieces/" + imageCoord.constructor.name + ".svg";
   let src = document.getElementById("taken" + imageCoord.id);
   src.appendChild(img);
 }
@@ -94,7 +103,7 @@ function removeNodeNoEvent(coord, remove) {
   parentDiv.removeChild(child);
 }
 
-//Reassigns piece.position after movement and sets hasMoved to true
+//Reassigns piece.position after movement and set hasMoved to true
 function updatePosition(id, newPos) {
   allPieces.forEach(o => {
     if (o.id === id) {
@@ -140,42 +149,26 @@ function removeHighlights(check) {
   }
 }
 
-//Does the move chosen trigger conditions for en passant?
-//Function could be adapted to also predict en passant for AI
+//Does the move chosen trigger conditions for en passant? Used in movement & CPU evaluation 
 function isEnPassant(piece, target) {
+
+  //if piece isnt a pawn => no en passant
   if (piece.constructor.name != "Pawn") {
-    allPawns.forEach(o => o.enPassant = false);
+    enPassantVulnerable = false;
     return;
   } else {
-    let num = parseInt(piece.position[1]);
-    let whiteTwoSquare = piece.position[0] + (num + 2);
-    let blackTwoSquare = piece.position[0] + (num - 2);
-    if (piece.color == "white") {
-      if (whiteTwoSquare == target) {
-        piece.enPassant = {takesSquare: piece.position[0] + (num + 1)};
-        allPawns.forEach(o => {
-          if (o.id != piece.id) {
-            o.enPassant = false;
-          }
-        })
-        return;
-      } else {
-        allPawns.forEach(o => o.enPassant = false);
-        return;
-      }
+
+    //Did the pawn move 2 squares forward?
+    piece.whiteColor == true ? useArray = whitePawnArrays : useArray = blackPawnArrays;
+    let positionData = useArray.find(data => data.square == piece.position);
+    if (positionData.movesTo[1] == target) {
+
+      //if pawn moved 2 squares set it vulerable to en passant
+      enPassantVulnerable = piece;
     } else {
-      if (blackTwoSquare == target) {
-        piece.enPassant = {takesSquare: piece.position[0] + (num - 1)};
-        allPawns.forEach(o => {
-          if (o.id != piece.id) {
-            o.enPassant = false;
-          }
-        })
-        return;
-      } else {
-        allPawns.forEach(o => o.enPassant = false);
-        return;
-      }
+
+      //if conditions not met set enPassantVulernable to false
+      enPassantVulnerable = false;
     }
   }
 }
@@ -184,7 +177,7 @@ function isEnPassant(piece, target) {
 function takenEnPassant(pawn) {
   removeNodeNoEvent(pawn.position, pawn.id);
   deleteFromData(pawn);
-  pawn.position = "taken";
+  pawn.position = false;
 }
 
 //if moved piece is a pawn & has reached backline, call 'chooseUpgrade' function
@@ -195,8 +188,8 @@ function pawnReachBackline(pawn) {
   } else {
     fiftyMoveStalemate = 0;
     threefoldRep = [];
-    if ((pawn.color == "white" && pawn.position[1] == "8") || 
-    (pawn.color == "black" && pawn.position[1] == "1")) {
+    if ((pawn.whiteColor == true && pawn.position[1] == "8") || 
+    (pawn.whiteColor == false && pawn.position[1] == "1")) {
       pawn = chooseUpgrade(pawn)
       return pawn;
     } 
@@ -217,28 +210,28 @@ function chooseUpgrade(pawn) {
       case "knight":
       case "k":
         removeUpgradedPawn(pawn)
-        pawn = new Knight(pawn.color, pawn.position);
+        pawn = new Knight(pawn.whiteColor, pawn.position);
         pawn.id = id + "Knight";
         createUpgradedPiece(pawn);
         break;
       case "bishop":
       case "b":
         removeUpgradedPawn(pawn)
-        pawn = new Bishop(pawn.color, pawn.position);
+        pawn = new Bishop(pawn.whiteColor, pawn.position);
         pawn.id = id + "Bishop";
         createUpgradedPiece(pawn);
         break;
       case "rook":
       case "r":
         removeUpgradedPawn(pawn)
-        pawn = new Rook(pawn.color, pawn.position);
+        pawn = new Rook(pawn.whiteColor, pawn.position);
         pawn.id = id + "Rook";
         createUpgradedPiece(pawn);
         break
       case "queen":
       case "q":
         removeUpgradedPawn(pawn)
-        pawn = new Queen(pawn.color, pawn.position);
+        pawn = new Queen(pawn.whiteColor, pawn.position);
         pawn.id = id + "Queen";
         createUpgradedPiece(pawn);
         break;
@@ -259,12 +252,12 @@ function removeUpgradedPawn(pawn) {
 
 function createUpgradedPiece(pawn) {
   allPieces.push(pawn);
-  pawn.color == "white" ? whitePieces.push(pawn) : blackPieces.push(pawn);
+  pawn.whiteColor == true ? whitePieces.push(pawn) : blackPieces.push(pawn);
   attachImage(pawn);
 }
 
 //if king castles, place rook in appropriate cell
-//function repeats a bit, could probably be shortened
+//function repeats and is too long
 function castleRook(newPiece, target) {
   if (newPiece.id == "e1King" && (nextLetter(target[0], 2, "plus") == newPiece.parentElement.id[0] ||
   nextLetter(target[0], 2, "minus") == newPiece.parentElement.id[0])) {

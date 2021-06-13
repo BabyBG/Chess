@@ -30,7 +30,8 @@ function masterAISequence(aIPlayer) {
     //was this a castling move?
     castleRook(newPiece, aITarget.id);
     //was this an enPassant move?
-    if (finalMove.piece.moveTakesPiece.find(o => o.id == targetCell) != undefined && 
+    if (finalMove.piece.moveTakesPiece.find(o => o.id == targetCell) != undefined &&
+    //PAWN DIAGONAL REMOVED, REPLACE WITH THE POSITION_ARRAYS.JS
     pawnDiagonal(finalMove.piece, [], cellIsBlank).includes(aITarget.id)) {
       takenEnPassant(finalMove.piece.offenseEnPassant);
     } else {
@@ -45,5 +46,3 @@ function masterAISequence(aIPlayer) {
   finalMove.piece = pawnReachBackline(finalMove.piece);
   turnSequence();
 }
-
-//add move randomiser if move scores are equal or very close

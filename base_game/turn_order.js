@@ -1,7 +1,7 @@
 //Player data placeholder
-let whitePlayer = {human: true, color: "white", id: "P1", activePieces: whitePieces, 
+let whitePlayer = {human: true, whiteColor: true, id: "P1", activePieces: whitePieces, 
 enemyPieces: blackPieces, friendlyKing: e1King, enemyKing: e8King};
-let blackPlayer = {human: true, color: "black", id: "P2", activePieces: blackPieces, 
+let blackPlayer = {human: true, whiteColor: false, id: "P2", activePieces: blackPieces, 
 enemyPieces: whitePieces, friendlyKing: e8King, enemyKing: e1King};
 let activePlayer = whitePlayer;
 let fiftyMoveStalemate = 0;
@@ -34,7 +34,7 @@ function isGameOver(friendlyKing, activePieces) {
   let gameOver = {whiteCheckmated: false, blackCheckmated: false, stalemate: false, bool: false}
   //if king is checked && no valid moves => checkmate and end game
   if (friendlyKing.inCheck != false && activePieces.every(o => o.possibleMoves[0] == undefined)) {
-    friendlyKing.color == "white" ? gameOver.whiteCheckmated = true : gameOver.blackCheckmated = true;
+    friendlyKing.whiteColor == true ? gameOver.whiteCheckmated = true : gameOver.blackCheckmated = true;
     gameOver.bool = true;
     return gameOver;
   }

@@ -4,9 +4,9 @@
 //CLOSER TO ACTUAL MATERIAL POINTS VALUE?
 function scorePositions(player) {
   let score = 0;
-  if (player.color == "white") {
+  if (player.whiteColor == true) {
     score = player.activePieces.map(piece => {
-      if (piece.position != "taken") {
+      if (piece.position != false) {
         let pieceScore = whitePositionScoring(piece)
         return pieceScore;
       } else {
@@ -15,7 +15,7 @@ function scorePositions(player) {
     })
   } else {
     score = player.activePieces.map(piece => {
-      if (piece.position != "taken") {
+      if (piece.position != false) {
         let pieceScore = blackPositionScoring(piece);
         return pieceScore;
       } else {
@@ -82,6 +82,8 @@ function blackPositionScoring(piece) {
   return score;
 }
 
+//Tidy up this section by deleting duplicate code for black and just passing the blackSwitch
+//functions as a variable in the main position scoring function.
 function whitePawn(position) {
   let boardPoints = [[0, 0.5, 0.5, 0, 0.5, 1, 5, 0], [0, 1, -0.5, 0, 0.5, 1, 5, 0], [0, 1, -1, 0, 1, 2, 5, 0],
   [0, -2, 0, 2, 2.5, 3, 5, 0], [0, -2, 0, 2, 2.5, 3, 5, 0], [0, 1, -1, 0, 1, 2, 5, 0], [0, 1, -0.5, 0, 0.5, 1, 5, 0],

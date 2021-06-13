@@ -1,5 +1,6 @@
 //Set grid variables
 let allSquares = [];
+//COULD DELETE ROWS & COLUMNS?
 let columns = [];
 let rows = [];
 
@@ -62,6 +63,7 @@ function row(element, index, b) {
 }
 
 //Diagonal arrays - I tried making a function to populate this list... but it took me a fraction of the time to just write them out instead
+//COULD DELETE THIS?
 let whiteDiag = [["a2", "b1"], ["a4", "b3", "c2", "d1"], ["a6", "b5", "c4", "d3", "e2", "f1"], ["a8", "b7", "c6", "d5", "e4", "f3", "g2", "h1"], 
 ["c8", "d7", "e6", "f5", "g4", "h3"], ["e8", "f7", "g6", "h5"], ["g8", "h7"], ["h3", "g2", "f1"], ["h5", "g4", "f3", "e2", "d1"], ["h7", "g6",
 "f5", "e4", "d3", "c2", "b1"], ["g8", "f7", "e6", "d5", "c4", "b3", "a2"], ["e8", "d7", "c6", "b5", "a4"], ["c8", "b7", "a6"]];
@@ -154,8 +156,8 @@ function deleteElement(array, element) {
 }
 
 //Find all squares occupied by a certain colour
-function findOccupied(whichColor) {
-  temp = allPieces.filter(o => o.color == whichColor)
+function findOccupied(colorBoolean) {
+  temp = allPieces.filter(o => o.whiteColor == colorBoolean)
   occupiedArray = temp.map(o => o.position);
   return occupiedArray
 }
@@ -169,7 +171,7 @@ function isLetter(str) {
 function cellIsMoveable(cell, piece) {
   a = allPieces.find(o => o.position == cell) 
   a == undefined ? pieceToTest = "blank" : pieceToTest = a
-  if (pieceToTest == "blank" || piece.color != pieceToTest.color) {
+  if (pieceToTest == "blank" || piece.whiteColor != pieceToTest.whiteColor) {
     return true;
   } else {
     return false;
@@ -179,12 +181,12 @@ function cellIsMoveable(cell, piece) {
 //Is cell occupied by an enemy piece?
 //returns an enemy piece object if true, returns false if not
 function cellIsEnemy(cell, piece) {
-  piece.color == "white" ? pieceSet = blackPieces : pieceSet = whitePieces;
+  piece.whiteColor == true ? pieceSet = blackPieces : pieceSet = whitePieces;
   let pieceToTest = pieceSet.find(o => o.position == cell);
   if (pieceToTest == undefined) {
     return false;
   }
-  if (pieceToTest.color != piece.color) {
+  if (pieceToTest.whiteColor != piece.whiteColor) {
     return pieceToTest;
   } else {
     return false;
@@ -203,7 +205,7 @@ function cellIsBlank(cell, nullOne, nullTwo) {
 
 //is cell friendly?
 function cellIsFriendly(cell, piece) {
-  let friendly = findOccupied(piece.color);
+  let friendly = findOccupied(piece.whiteColor);
   if (friendly.includes(cell)) {
     return true;
   } else {
@@ -230,4 +232,23 @@ function count(x, array) {
     count++;
   }
   return count;
+}
+
+//randomly shuffle elements in an array
+//directly copied from 'Fisher-Yates (aka Knuth) Shuffle'
+function shuffle(array) {
+  var currentIndex = array.length,  randomIndex;
+  while (0 !== currentIndex) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+  return array;
+}
+
+//deletes duplicates from array when combined with filter()
+// => let unique = a.filter(onlyUnique); 
+function onlyUnique(value, index, self) {
+  return self.indexOf(value) === index;
 }
