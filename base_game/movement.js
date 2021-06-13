@@ -347,13 +347,13 @@ function blackCastling(king, wP, bP) {
   //examine queen's side castling
   if (h1Rook.hasMoved == false && castlingCells(king, ["b8", "c8", "d8"], ["c8", "d8"], wP, bP) == true) {
     king.possibleMoves.push("c8");
-    king.castles.push({kingMoves: "c8", rook: qSideR, rookMoves: "d8", returnRookTo: "a8"});
+    king.castles.push({kingMoves: "c8", rook: a8Rook, rookMoves: "d8", returnRookTo: "a8"});
   }
 
   //examine king's side castling
   if (h8Rook.hasMoved == false && castlingCells(king, ["f8", "g8"], ["f8", "g8"], wP, bP) == true) {
     king.possibleMoves.push("g8");
-    king.castles.push({kingMoves: "g8", rook: kSideR, rookMoves: "f8", returnRookTo: "h8"});
+    king.castles.push({kingMoves: "g8", rook: h8Rook, rookMoves: "f8", returnRookTo: "h8"});
   }
 }
 
