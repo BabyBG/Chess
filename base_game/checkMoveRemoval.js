@@ -28,19 +28,19 @@ function masterInvalidCalc(friendlyPieces, enemyPieces, king) {
 
     //if king is checked by multiple pieces simultaneously make everything not king-based an invalidMove
     if (king.inCheck.length > 1) {
-      useFriendlyPieces.forEach(piece => {
-        if (piece.constructor != "King") piece.invalidMoves = piece.possibleMoves;
-      })
+      useFriendlyPieces.forEach(piece => piece.invalidMoves = piece.possibleMoves);
     
     //if king is checked by only one piece make everything that doesnt block/take that piece invalid
     } else {
       let onlyTheseMovesValid = whenCheckedByOne(king);
       useFriendlyPieces.forEach(piece => {
         piece.invalidMoves = piece.possibleMoves.filter(move => !onlyTheseMovesValid.includes(move));
-      })
+      });
       
       //pinned pieces will be unable to move
-      pinnedPieces.forEach(element => element.piece.invalidMoves = element.piece.possibleMoves);
+      pinnedPieces.forEach(element => {
+        element.piece.possibleMoves.forEach(move => element.piece.invalidMoves.push(move));
+      });
     }
 
   //if king is not in check look only for pinned pieces
@@ -51,14 +51,14 @@ function masterInvalidCalc(friendlyPieces, enemyPieces, king) {
   }
 
   //purge any move from piece.possibleMoves or piece.moveTakesPiece that is found in piece.invalidMoves
-  deleteInvalid(king);;
+  deleteInvalid(king);
   useFriendlyPieces.forEach(piece => deleteInvalid(piece));
 }
 
 
-//////////////////////////////////////////////////////////////////////////////
-//Determine if king is in check, where from, and which squares block the check
-//////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+//Functions to determine if king is in check, where from, and which squares block check
+///////////////////////////////////////////////////////////////////////////////////////
 //Creates king.invalidMoves, uses them to determine if king is in check
 function isKingChecked(king, enemyPieces) {
   king.invalidMoves = enemyPieces.map(o => o.blocksEnemyKing).flat().filter(onlyUnique);
@@ -184,7 +184,7 @@ function isPinned(king, attackLine, fOccupied, eOccupied, fPieces) {
     //if exactly 1 friendly piece & no enemy pieces are blocking attack to the king => the piece is pinned
     if (fPopulated.length == 1 && ePopulated == 0) {
 
-      //find the pinned piece, restrict it's movement to the reduce attack line
+      //find the pinned piece, restrict it's movement to the reduced attack line
       let pinnedFPiece = fPieces.find(fPiece => reduceAtk.includes(fPiece.position))
 
       //remove it's position from newValidMoves & add pinning piece's position
