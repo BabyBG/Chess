@@ -153,16 +153,19 @@ function bishopMovement(bishop, whitePos, blackPos) {
 //////////////////////////////////////////////////////////////////////
 function rookMovement(rook, whitePos, blackPos) {
 
+  let positionLetter = rook.position[0];
+  let positionNumber = rook.position[1];
+
   //find rows and columns the rook is present on
-  let rookColumns = columns.find(o => o.includes(rook.position));
-  let rookRows = rows.find(o => o.includes(rook.position));
+  let rookColumn = rookLetterArrays.find(o => o.letter == positionLetter).columns;
+  let rookRow = rookNumberArrays.find(o => o.number == positionNumber).rows
   
   //set piece.occupyLines for check pinning calculation
-  rook.occupyLines.push(rookColumns, rookRows);
+  rook.occupyLines.push(rookColumn, rookRow);
 
   //filter moves blocked by other pieces
-  let evalColumns = linearCollision(rook, rookColumns, whitePos, blackPos);
-  let evalRows = linearCollision(rook, rookRows, whitePos, blackPos);
+  let evalColumns = linearCollision(rook, rookColumn, whitePos, blackPos);
+  let evalRows = linearCollision(rook, rookRow, whitePos, blackPos);
   
   rook.blocksEnemyKing = rook.blocksEnemyKing.flat();
 
@@ -337,7 +340,7 @@ function whiteCastling(king, wP, bP) { //shorten white & black pieces to wP & bP
   //examine king's side castling
   if (a8Rook.hasMoved == false && castlingCells(king, ["f1", "g1"], ["f1", "g1"], wP, bP) == true) {
     king.possibleMoves.push("g1");
-    king.castles.push({kingMoves: "g1", rook: a8Rook, rookMoves: "f1", returnRookTo: "h1"});
+    king.castles.push({kingMoves: "g1", rook: h1Rook, rookMoves: "f1", returnRookTo: "h1"});
   }
 }
 
