@@ -1,7 +1,7 @@
-//WHITE PAWN
-//add a diagonal taking data array?
-//an en passant array?
-//obv add to getblackPawnArrays() too
+//////////////
+//WHITE PAWN//
+//////////////
+
 function getWhitePawnArrays() {
   let a2 = {square: "a2", movesTo: ["a3", "a4"], diagonal: ["b3"], enPassant: []};
   let a3 = {square: "a3", movesTo: ["a4"], diagonal: ["b4"], enPassant: []};
@@ -66,7 +66,12 @@ function getWhitePawnArrays() {
   
   return allPositions;
 };
-//BLACK PAWN
+
+
+//////////////
+//BLACK PAWN//
+//////////////
+
 function getBlackPawnArrays() {
   let a2 = {square: "a2", movesTo: ["a1"], diagonal: ["b1"], enPassant: []};
   let a3 = {square: "a3", movesTo: ["a2"], diagonal: ["b2"], enPassant: []};
@@ -131,7 +136,11 @@ function getBlackPawnArrays() {
   return allPositions;
 }
 
-//KNIGHT
+
+//////////
+//KNIGHT//
+//////////
+
 function getKnightArrays() {
   let a1 = {square: "a1", movesTo: ["b3", "c2"]};
   let a2 = {square: "a2", movesTo: ["b4", "c1", "c3"]};
@@ -161,7 +170,7 @@ function getKnightArrays() {
   let c8 = {square: "c8", movesTo: ["a7", "b6", "d6", "e7"]};
 
   let d1 = {square: "d1", movesTo: ["b2", "c3", "e3", "f2"]};
-  let d2 = {square: "d2", movesTo: ["b1", "b3", "c4", "c4", "f1", "f3"]};
+  let d2 = {square: "d2", movesTo: ["b1", "b3", "c4", "e4", "f1", "f3"]};
   let d3 = {square: "d3", movesTo: ["b2", "b4", "c1", "c5", "e1", "e5", "f2", "f4"]};
   let d4 = {square: "d4", movesTo: ["b3", "b5", "c2", "c6", "e2", "e6", "f3", "f5"]};
   let d5 = {square: "d5", movesTo: ["b4", "b6", "c3", "c7", "e3", "e7", "f4", "f6"]};
@@ -170,7 +179,7 @@ function getKnightArrays() {
   let d8 = {square: "d8", movesTo: ["b7", "c6", "e6", "f7"]};
 
   let e1 = {square: "e1", movesTo: ["c2", "d3", "f3", "g2"]};
-  let e2 = {square: "e2", movesTo: ["c1", "c3", "d4", "d4", "g1", "g3"]};
+  let e2 = {square: "e2", movesTo: ["c1", "c3", "d4", "f4", "g1", "g3"]};
   let e3 = {square: "e3", movesTo: ["c2", "c4", "d1", "d5", "f1", "f5", "g2", "g4"]};
   let e4 = {square: "e4", movesTo: ["c3", "c5", "d2", "d6", "f2", "f6", "g3", "g5"]};
   let e5 = {square: "e5", movesTo: ["c4", "c6", "d3", "d7", "f3", "f7", "g4", "g6"]};
@@ -179,7 +188,7 @@ function getKnightArrays() {
   let e8 = {square: "e8", movesTo: ["c7", "d6", "f6", "g7"]};
 
   let f1 = {square: "f1", movesTo: ["d2", "e3", "g3", "h2"]};
-  let f2 = {square: "f2", movesTo: ["d1", "d3", "e4", "e4", "h1", "h3"]};
+  let f2 = {square: "f2", movesTo: ["d1", "d3", "e4", "g4", "h1", "h3"]};
   let f3 = {square: "f3", movesTo: ["d2", "d4", "e1", "e5", "g1", "g5", "h2", "h4"]};
   let f4 = {square: "f4", movesTo: ["d3", "d5", "e2", "e6", "g2", "g6", "h3", "h5"]};
   let f5 = {square: "f5", movesTo: ["d4", "d6", "e3", "e7", "g3", "g7", "h4", "h6"]};
@@ -212,20 +221,23 @@ function getKnightArrays() {
   return allPositions;
 }
 
-//BISHOP
-//revisit bishop and rooks if calcPossibleMoves() still runs a little slow
+
+//////////
+//BISHOP//
+//////////
+
 function getBishopArrays() {
-  let a1 = {square: "a1", movesTo: [["b2", "c3", "d4", "e5", "f6", "g7", "h8"], []]};
-  let a2 = {square: "a2", movesTo: [["b3", "c4", "d5", "e6", "f7", "g8"], ["b1"]]};
-  let a3 = {square: "a3", movesTo: [["b4", "c5", "d6", "e7", "f8"], ["b2", "c1"]]};
-  let a4 = {square: "a4", movesTo: [["b5", "c6", "d7", "e8"], ["b3", "c2", "d1"]]};
-  let a5 = {square: "a5", movesTo: [["b6", "c7", "d8"], ["b4", "c3", "d2", "e1"]]};
-  let a6 = {square: "a6", movesTo: [["b7", "c8"], ["b5", "c4", "d3", "e2", "f1"]]};
-  let a7 = {square: "a7", movesTo: [["b8"], ["b6", "c5", "d4", "e3", "f2", "g1"]]};
-  let a8 = {square: "a8", movesTo: [[], ["b7", "c6", "d5", "e4", "f3", "g2", "h1"]]};
+  let a1 = {square: "a1", movesTo: [["a1", "b2", "c3", "d4", "e5", "f6", "g7", "h8"], []]};
+  let a2 = {square: "a2", movesTo: [["a2", "b3", "c4", "d5", "e6", "f7", "g8"], ["a2", "b1"]]};
+  let a3 = {square: "a3", movesTo: [["a3", "b4", "c5", "d6", "e7", "f8"], ["a3", "b2", "c1"]]};
+  let a4 = {square: "a4", movesTo: [["a4", "b5", "c6", "d7", "e8"], ["a4", "b3", "c2", "d1"]]};
+  let a5 = {square: "a5", movesTo: [["a5", "b6", "c7", "d8"], ["a5", "b4", "c3", "d2", "e1"]]};
+  let a6 = {square: "a6", movesTo: [["a6", "b7", "c8"], ["a6", "b5", "c4", "d3", "e2", "f1"]]};
+  let a7 = {square: "a7", movesTo: [["a7", "b8"], ["a7", "b6", "c5", "d4", "e3", "f2", "g1"]]};
+  let a8 = {square: "a8", movesTo: [[], ["a8", "b7", "c6", "d5", "e4", "f3", "g2", "h1"]]};
 
-  let b1 = {square: "b1", movesTo: [["c2", "d3", "e4", "f5", "g6", "h7"], ["a2"]]};
-  let b2 = {square: "b2", movesTo: [["a1", "c3", ""], []]};
+  let b1 = {square: "b1", movesTo: [["b1", "c2", "d3", "e4", "f5", "g6", "h7"], ["a2", "b1"]]};
+  let b2 = {square: "b2", movesTo: [["a1", "b2", "c3", ""], []]};
   let b3 = {square: "b3", movesTo: []};
   let b4 = {square: "b4", movesTo: []};
   let b5 = {square: "b5", movesTo: []};
@@ -234,7 +246,7 @@ function getBishopArrays() {
   let b8 = {square: "b8", movesTo: []};
 
   let c1 = {square: "c1", movesTo: []};
-  let c2 = {square: "c2", movesTo: []};
+  let c2 = {square: "c2", movesTo: [["b1", "c2", "d3", "e4", "f5", "g6", "h7"], []]};
   let c3 = {square: "c3", movesTo: []};
   let c4 = {square: "c4", movesTo: []};
   let c5 = {square: "c5", movesTo: []};
@@ -244,7 +256,7 @@ function getBishopArrays() {
 
   let d1 = {square: "d1", movesTo: []};
   let d2 = {square: "d2", movesTo: []};
-  let d3 = {square: "d3", movesTo: []};
+  let d3 = {square: "d3", movesTo: [["b1", "c2", "d3", "e4", "f5", "g6", "h7"], []]};
   let d4 = {square: "d4", movesTo: []};
   let d5 = {square: "d5", movesTo: []};
   let d6 = {square: "d6", movesTo: []};
@@ -254,7 +266,7 @@ function getBishopArrays() {
   let e1 = {square: "e1", movesTo: []};
   let e2 = {square: "e2", movesTo: []};
   let e3 = {square: "e3", movesTo: []};
-  let e4 = {square: "e4", movesTo: []};
+  let e4 = {square: "e4", movesTo: [["b1", "c2", "d3", "e4", "f5", "g6", "h7"], []]};
   let e5 = {square: "e5", movesTo: []};
   let e6 = {square: "e6", movesTo: []};
   let e7 = {square: "e7", movesTo: []};
@@ -264,7 +276,7 @@ function getBishopArrays() {
   let f2 = {square: "f2", movesTo: []};
   let f3 = {square: "f3", movesTo: []};
   let f4 = {square: "f4", movesTo: []};
-  let f5 = {square: "f5", movesTo: []};
+  let f5 = {square: "f5", movesTo: [["b1", "c2", "d3", "e4", "f5", "g6", "h7"], []]};
   let f6 = {square: "f6", movesTo: []};
   let f7 = {square: "f7", movesTo: []};
   let f8 = {square: "f8", movesTo: []};
@@ -274,7 +286,7 @@ function getBishopArrays() {
   let g3 = {square: "g3", movesTo: []};
   let g4 = {square: "g4", movesTo: []};
   let g5 = {square: "g5", movesTo: []};
-  let g6 = {square: "g6", movesTo: []};
+  let g6 = {square: "g6", movesTo: [["b1", "c2", "d3", "e4", "f5", "g6", "h7"], []]};
   let g7 = {square: "g7", movesTo: []};
   let g8 = {square: "g8", movesTo: []};
 
@@ -284,7 +296,7 @@ function getBishopArrays() {
   let h4 = {square: "h4", movesTo: []};
   let h5 = {square: "h5", movesTo: []};
   let h6 = {square: "h6", movesTo: []};
-  let h7 = {square: "h7", movesTo: []};
+  let h7 = {square: "h7", movesTo: [["b1", "c2", "d3", "e4", "f5", "g6", "h7"], []]};
   let h8 = {square: "h8", movesTo: []};
 
   let allPositions = [a1, a2, a3, a4, a5, a6, a7, a8, b1, b2, b3, b4, b5, b6, b7, b8,
@@ -294,90 +306,44 @@ function getBishopArrays() {
   return allPositions;
 }
 
-//ROOK
-function getRookArrays() {
-  let a1 = {square: "a1", movesTo: []};
-  let a2 = {square: "a2", movesTo: []};
-  let a3 = {square: "a3", movesTo: []};
-  let a4 = {square: "a4", movesTo: []};
-  let a5 = {square: "a5", movesTo: []};
-  let a6 = {square: "a6", movesTo: []};
-  let a7 = {square: "a7", movesTo: []};
-  let a8 = {square: "a8", movesTo: []};
 
-  let b1 = {square: "b1", movesTo: []};
-  let b2 = {square: "b2", movesTo: []};
-  let b3 = {square: "b3", movesTo: []};
-  let b4 = {square: "b4", movesTo: []};
-  let b5 = {square: "b5", movesTo: []};
-  let b6 = {square: "b6", movesTo: []};
-  let b7 = {square: "b7", movesTo: []};
-  let b8 = {square: "b8", movesTo: []};
+////////
+//ROOK//
+////////
 
-  let c1 = {square: "c1", movesTo: []};
-  let c2 = {square: "c2", movesTo: []};
-  let c3 = {square: "c3", movesTo: []};
-  let c4 = {square: "c4", movesTo: []};
-  let c5 = {square: "c5", movesTo: []};
-  let c6 = {square: "c6", movesTo: []};
-  let c7 = {square: "c7", movesTo: []};
-  let c8 = {square: "c8", movesTo: []};
+function getRookLetterArrays() {
+  let a = {letter: "a", columns: ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8"]};
+  let b = {letter: "b", columns: ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8"]};
+  let c = {letter: "c", columns: ["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"]};
+  let d = {letter: "d", columns: ["d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8"]};
+  let e = {letter: "e", columns: ["e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8"]};
+  let f = {letter: "f", columns: ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"]};
+  let g = {letter: "g", columns: ["g1", "g2", "g3", "g4", "g5", "g6", "g7", "g8"]};
+  let h = {letter: "h", columns: ["h1", "h2", "h3", "h4", "h5", "h6", "h7", "h8"]};
 
-  let d1 = {square: "d1", movesTo: []};
-  let d2 = {square: "d2", movesTo: []};
-  let d3 = {square: "d3", movesTo: []};
-  let d4 = {square: "d4", movesTo: []};
-  let d5 = {square: "d5", movesTo: []};
-  let d6 = {square: "d6", movesTo: []};
-  let d7 = {square: "d7", movesTo: []};
-  let d8 = {square: "d8", movesTo: []};
+  let allLetters = [a, b, c, d, e, f, g, h];
+  return allLetters;
+}
+  
+function getRookNumberArrays() {
+  let one = {number: 1, rows: ["a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1"]};
+  let two = {number: 2, rows: ["a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2"]};
+  let three = {number: 3, rows: ["a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3"]};
+  let four = {number: 4, rows: ["a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4"]};
+  let five = {number: 5, rows: ["a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5"]};
+  let six = {number: 6, rows: ["a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6"]};
+  let seven = {number: 7, rows: ["a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7"]};
+  let eight = {number: 8, rows: ["a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"]};
 
-  let e1 = {square: "e1", movesTo: []};
-  let e2 = {square: "e2", movesTo: []};
-  let e3 = {square: "e3", movesTo: []};
-  let e4 = {square: "e4", movesTo: []};
-  let e5 = {square: "e5", movesTo: []};
-  let e6 = {square: "e6", movesTo: []};
-  let e7 = {square: "e7", movesTo: []};
-  let e8 = {square: "e8", movesTo: []};
-
-  let f1 = {square: "f1", movesTo: []};
-  let f2 = {square: "f2", movesTo: []};
-  let f3 = {square: "f3", movesTo: []};
-  let f4 = {square: "f4", movesTo: []};
-  let f5 = {square: "f5", movesTo: []};
-  let f6 = {square: "f6", movesTo: []};
-  let f7 = {square: "f7", movesTo: []};
-  let f8 = {square: "f8", movesTo: []};
-
-  let g1 = {square: "g1", movesTo: []};
-  let g2 = {square: "g2", movesTo: []};
-  let g3 = {square: "g3", movesTo: []};
-  let g4 = {square: "g4", movesTo: []};
-  let g5 = {square: "g5", movesTo: []};
-  let g6 = {square: "g6", movesTo: []};
-  let g7 = {square: "g7", movesTo: []};
-  let g8 = {square: "g8", movesTo: []};
-
-  let h1 = {square: "h1", movesTo: []};
-  let h2 = {square: "h2", movesTo: []};
-  let h3 = {square: "h3", movesTo: []};
-  let h4 = {square: "h4", movesTo: []};
-  let h5 = {square: "h5", movesTo: []};
-  let h6 = {square: "h6", movesTo: []};
-  let h7 = {square: "h7", movesTo: []};
-  let h8 = {square: "h8", movesTo: []};
-
-  let allPositions = [a1, a2, a3, a4, a5, a6, a7, a8, b1, b2, b3, b4, b5, b6, b7, b8,
-  c1, c2, c3, c4, c5, c6, c7, c8, d1, d2, d3, d4, d5, d6, d7, d8, e1, e2, e3, e4, e5,
-  e6, e7, e8, f1, f2, f3, f4, f5, f6, f7, f8, g1, g2, g3, g4, g5, g6, g7, g8, h1, h2, h3,
-  h4, h5, h6, h7, h8];
-  return allPositions;
+  let allNumbers = [one, two, three, four, five, six, seven, eight];
+  return allNumbers;
 }
 
-//QUEEN = BISHOP + ROOK at top of movement.js
 
-//KING
+////////
+//KING//
+////////
+
 function getKingArrays() {
   let a1 = {square: "a1", movesTo: ["a2", "b1", "b2"]};
   let a2 = {square: "a2", movesTo: ["a1", "a3", "b1", "b2", "b3"]};
@@ -433,14 +399,14 @@ function getKingArrays() {
   let f7 = {square: "f7", movesTo: ["e6", "e7", "e8", "f6", "f8", "g6", "g7", "g8"]};
   let f8 = {square: "f8", movesTo: ["e7", "e8", "f7", "g7", "g8"]};
 
-  let g1 = {square: "g1", movesTo: ["c1", "c2", "d2", "e1", "e2"]};
-  let g2 = {square: "g2", movesTo: ["c1", "c2", "c3", "d1", "d3", "e1", "e2", "e3"]};
-  let g3 = {square: "g3", movesTo: ["c2", "c3", "c4", "d2", "d4", "e2", "e3", "e4"]};
-  let g4 = {square: "g4", movesTo: ["c3", "c4", "c5", "d3", "d5", "e3", "e4", "e5"]};
-  let g5 = {square: "g5", movesTo: ["c4", "c5", "c6", "d4", "d6", "e4", "e5", "e6"]};
-  let g6 = {square: "g6", movesTo: ["c5", "c6", "c7", "d5", "d7", "e5", "e6", "e7"]};
-  let g7 = {square: "g7", movesTo: ["c6", "c7", "c8", "d6", "d8", "e6", "e7", "e8"]};
-  let g8 = {square: "g8", movesTo: ["c7", "c8", "d7", "e7", "e8"]};
+  let g1 = {square: "g1", movesTo: ["f1", "f2", "g2", "h1", "h2"]};
+  let g2 = {square: "g2", movesTo: ["f1", "f2", "f3", "g1", "g3", "h1", "h2", "h3"]};
+  let g3 = {square: "g3", movesTo: ["f2", "f3", "f4", "g2", "g4", "h2", "h3", "h4"]};
+  let g4 = {square: "g4", movesTo: ["f3", "f4", "f5", "g3", "g5", "h3", "h4", "h5"]};
+  let g5 = {square: "g5", movesTo: ["f4", "f5", "f6", "g4", "g6", "h4", "h5", "h6"]};
+  let g6 = {square: "g6", movesTo: ["f5", "f6", "f7", "g5", "g7", "h5", "h6", "h7"]};
+  let g7 = {square: "g7", movesTo: ["f6", "f7", "f8", "g6", "g8", "h6", "h7", "h8"]};
+  let g8 = {square: "g8", movesTo: ["f7", "f8", "g7", "h7", "h8"]};
 
   let h1 = {square: "h1", movesTo: ["g1", "g2", "h2"]};
   let h2 = {square: "h2", movesTo: ["g1", "g2", "g3", "h1", "h3"]};
@@ -462,6 +428,6 @@ let whitePawnArrays = getWhitePawnArrays();
 let blackPawnArrays = getBlackPawnArrays();
 let knightArrays = getKnightArrays();
 //let bishopArrays = getBishopArrays();
-//let rookArrays = getQueenArrays();
-//let queenArrays = {bishop: bishopArrays, rook: rookArrays};
+let rookLetterArrays = getRookLetterArrays();
+let rookNumberArrays = getRookNumberArrays();
 let kingArrays = getKingArrays();
