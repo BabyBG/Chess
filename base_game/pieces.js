@@ -1,3 +1,7 @@
+//Holds templates for creating each piece
+//Responsible for initial attachment of piece graphics to board
+//Adds taken pieces graphic to side board
+
 //Piece templates
 class Pawn {
   constructor(color, startPosition) {

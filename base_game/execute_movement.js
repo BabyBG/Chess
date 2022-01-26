@@ -1,3 +1,7 @@
+//Everything on this page is dedicated to what happens when a piece is picked up on the board by a human 
+//using drag and drop functions
+//Determines if attempted move is valid. If valid resolves any pieces taken/en passant/castling/pawn upgrading
+
 //variable to track whether enPassant is available
 //controlled by isEnPassant() on this page
 let enPassantVulnerable = false;
@@ -28,7 +32,7 @@ function drag(ev) {
   }
 }
 
-//Messy function, can be cleaned up
+//YOU HAVE TO CLEAN THIS FUNCTION UP
 //Confirms drag move, reassigns position of moved piece, removes any taken piece
 function drop(ev) {
   ev.preventDefault();
@@ -39,7 +43,7 @@ function drop(ev) {
   //find piece in the position_arrays.js
   let positionArrays = [];
   piece.constructor.name == "Pawn" && piece.whiteColor == true ? positionArrays = whitePawnArrays : positionArrays = blackPawnArrays;
-  let positionData = positionArrays.find(o => o.square == piece.position)
+  let positionData = positionArrays.find(o => o.letter == piece.position[0]).numberData[piece.position[1]-1];
   let target = ev.target.id;
   //CANT REMEMBER WHAT THIS IF STATEMENT IS FOR ANYMORE, SEEMS IMPORTANT? ANNOTATE YOUR WORK
   if (ev.target.id.length > 2) {
@@ -125,6 +129,8 @@ function deleteFromData(piece) {
   threefoldRep = [];
 }
 
+
+//Removes squares highlighted red from check by resetting all squares to their default colours
 function removeHighlights(check) {
   if (check == false) {
     allSquares.forEach(cell => {
@@ -160,7 +166,7 @@ function isEnPassant(piece, target) {
 
     //Did the pawn move 2 squares forward?
     piece.whiteColor == true ? useArray = whitePawnArrays : useArray = blackPawnArrays;
-    let positionData = useArray.find(data => data.square == piece.position);
+    let positionData = useArray.find(o => o.letter == piece.position[0]).numberData[piece.position[1]-1];
     if (positionData.movesTo[1] == target) {
 
       //if pawn moved 2 squares set it vulerable to en passant

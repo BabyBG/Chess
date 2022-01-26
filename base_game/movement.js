@@ -1,5 +1,8 @@
+//Page for calculating all possible moves, and also identifying moves that result in a piece being taken
+//Assigns each to respective piece.possibleMoves or piece.moveTakesPiece properties for all pieces. 
+
 ///////////////////////////////////////////////////////////////////////
-//master move function, when called calculates all moves for all pieces
+//calcPossibleMoves() is master move function, when called calculates all moves for all pieces
 //can overwrite moves if called in wrong place
 ///////////////////////////////////////////////////////////////////////
 function calcPossibleMoves() {
@@ -26,7 +29,7 @@ function calcPossibleMoves() {
   bothKings.forEach(king => castlingPossible(king, whitePos, blackPos));
 }
 
-//directs to each specific piece's movement function
+//directs to each specific piece's movement function further down this page
 function calcMoveSwitch(piece, whitePos, blackPos) {
   switch(piece.constructor.name) {
     case "Pawn":
@@ -62,12 +65,19 @@ function calcMoveSwitch(piece, whitePos, blackPos) {
 ////////////////////////////////////////////////////////////////
 function pawnMovement(pawn, whitePos, blackPos) {
   
-  //get relevant entry in pawn data array
+  //get relevant entry in pawn data array from position_arrays.js
   let validMoves = [];
   pawn.moveTakesPiece = [];
   pawn.whiteColor == true ? useArray = whitePawnArrays : useArray = blackPawnArrays;
   pawn.whiteColor == true ? enemyPieces = blackPieces : enemyPieces = whitePieces;
-  let positionData = useArray.find(data => data.square == pawn.position);
+  let positionData = useArray.find(o => o.letter == pawn.position[0]).numberData[pawn.position[1]-1];
+  //.numberData.find(o => o.number == pawn.position[1]);
+ 
+  //This is the best place to identify pawns on the backline? Cant think of another way to check unobtrusively
+  //if pawn is on backline run pawnBacklineAI to remove pawn and upgrade piece (queen default, but conditions
+  //for other pieces too) 
+  //pawnBacklineAI(pawn) if (positionData == false)
+  //return;
 
   //set moves 1 & 2 variables
   let movesOne = positionData.movesTo[0]
@@ -106,10 +116,10 @@ function pawnMovement(pawn, whitePos, blackPos) {
 //assigns all knight moves using knight arrays in position_arrays.js
 ////////////////////////////////////////////////////////////////////
 function knightMovement(knight, whitePos, blackPos) {
-  
-  //set data arrays
+
+  //set data arrays from position_arrays.js
   knight.whiteColor == true ? friendlyPositions = whitePos : friendlyPositions = blackPos;
-  let positionData = knightArrays.find(data => data.square == knight.position);
+  let positionData = knightArrays.find(o => o.letter == knight.position[0]).numberData[knight.position[1]-1];
 
   //assign king blocking moves
   knight.blocksEnemyKing = positionData.movesTo;
@@ -127,18 +137,18 @@ function knightMovement(knight, whitePos, blackPos) {
 ////////////////////////////////////////////////////////////////
 function bishopMovement(bishop, whitePos, blackPos) {
 
-  //find the diagonal arrays this bishop is a part of
-  //finish the position_arrays.js for bishop instead of this filter
-  let whiteTiles = whiteDiag.filter(o => o.includes(bishop.position));
-  let blackTiles = blackDiag.filter(o => o.includes(bishop.position));
-  whiteTiles.length == 0 ? useDiagArray = blackTiles : useDiagArray = whiteTiles;
+  //set data arrays from position_arrays.js
+  let positionData = bishopArrays.find(o => o.letter == bishop.position[0]).numberData[bishop.position[1]-1];
+
+  //set enemyKing for use in linearCollision to stop kings self-blocking block
+  bishop.whiteColor == true ? enemyKing = e8King : enemyKing = e1King;
 
   //map these arrays into validMoves, using linearCollision() to eliminate blocked movement
-  let validMoves = useDiagArray.map(singleDiag => {
+  let validMoves = positionData.movesTo.map(singleDiag => {
 
       //add occupyLines for future check calculations while we have the opportunity
       bishop.occupyLines.push(singleDiag)
-      return linearCollision(bishop, singleDiag, whitePos, blackPos);
+      return linearCollision(bishop, singleDiag, whitePos, blackPos, enemyKing);
   })
 
   bishop.blocksEnemyKing = bishop.blocksEnemyKing.flat();
@@ -156,16 +166,19 @@ function rookMovement(rook, whitePos, blackPos) {
   let positionLetter = rook.position[0];
   let positionNumber = rook.position[1];
 
-  //find rows and columns the rook is present on
+  //find rows and columns the rook is present on from position_arrays.js
   let rookColumn = rookLetterArrays.find(o => o.letter == positionLetter).columns;
-  let rookRow = rookNumberArrays.find(o => o.number == positionNumber).rows
+  let rookRow = rookNumberArrays[rook.position[1]-1].rows;
   
   //set piece.occupyLines for check pinning calculation
   rook.occupyLines.push(rookColumn, rookRow);
 
+  //set enemyKing for use in linearCollision to stop kings self-blocking block
+  rook.whiteColor == true ? enemyKing = e8King : enemyKing = e1King;
+
   //filter moves blocked by other pieces
-  let evalColumns = linearCollision(rook, rookColumn, whitePos, blackPos);
-  let evalRows = linearCollision(rook, rookRow, whitePos, blackPos);
+  let evalColumns = linearCollision(rook, rookColumn, whitePos, blackPos, enemyKing);
+  let evalRows = linearCollision(rook, rookRow, whitePos, blackPos, enemyKing);
   
   rook.blocksEnemyKing = rook.blocksEnemyKing.flat();
 
@@ -187,8 +200,10 @@ function queenMovement(queen, whitePos, blackPos) {
 //////////////////////////////////////////////////////////////////
 function kingMovement(king, whitePos, blackPos) {
 
-  //set data arrays
-  let positionData = kingArrays.find(data => data.square == king.position)
+  //set data arrays from position_arrays.js
+  let positionData = kingArrays.find(o => o.letter == king.position[0]).numberData[king.position[1]-1];
+  
+  //.numberData.find(o => o.number == king.position[1]);
   king.whiteColor == true ? friendlyPos = whitePos : friendlyPos = blackPos;
 
   //assign piece.blocksEnemyKing
@@ -205,27 +220,39 @@ function kingMovement(king, whitePos, blackPos) {
 //linearCollision() deletes moves that are blocked by friendly or enemy pieces
 //used by bishopMovement(), rookMovement() and, by extension, queenMovement()
 //////////////////////////////////////////////////////////////////////////////
-function linearCollision(piece, movesArray, whitePos, blackPos) {
-  
+function linearCollision(piece, movesArray, whitePos, blackPos, enemyKing) {
+
   //if piece is completely blocked from moving immediately return '[]' to avoid exception throw
   if (movesArray.length == 0) return movesArray;
+
+  //set backupMoves for king blocking use
+  let backupMoves = movesArray;
 
   //set white/black pieces to use
   piece.whiteColor == true ? enemyPos = blackPos : enemyPos = whitePos;
   piece.whiteColor == true ? friendlyPos = whitePos : friendlyPos = blackPos;
-  
-  //create index data, positional index of original piece, which positions in movesArray 
-  //are occupied, and if the occupied square is friendly or not
+
+  //create positional index of original piece and index of enemy pieces on same lines
   let originIndex = movesArray.indexOf(piece.position);
   let opposingIndex = makeIndex(movesArray, enemyPos, originIndex, piece);
-  
-  //first test is for moves blocked by enemy pieces, followed by a test for moves blocked by friendly pieces  
-  movesArray = removeBlockedByEnemy(movesArray, opposingIndex, originIndex);
-  movesArray = removeBlockedByFriendly(movesArray, friendlyPos, piece);
-  
-  //while we're here add moves to piece.blocksEnemyKing
-  piece.blocksEnemyKing.push(movesArray);
 
+  //Remove enemy-blocked squares
+  movesArray = removeBlockedByEnemy(movesArray, opposingIndex, originIndex);
+
+  //Data arrays for piece.blocksEnemyKing & removeBlockedByFriendly()
+  originIndex = movesArray.indexOf(piece.position);
+  let friendlyIndex = makeIndex(movesArray, friendlyPos, originIndex, piece);
+  let plusMinus = friendlyIndex.indexOf(originIndex);
+
+  //get piece.blocksEnemyKing moves
+  piece.blocksEnemyKing.push(getBlocksEnemyKing(movesArray, originIndex, friendlyIndex, plusMinus));
+  
+  //Remove friendly-blocked squares
+  movesArray = removeBlockedByFriendly(movesArray, originIndex, friendlyIndex, plusMinus); 
+
+  //if enemy king is present on examined line, run specialised getExtraBlockedKing()
+  if (movesArray.includes(enemyKing.position)) getExtraBlockedKing(piece, backupMoves, enemyKing)
+  
   return movesArray;
 }
 
@@ -249,26 +276,50 @@ function removeBlockedByEnemy(movesArray, piecesIndex, originIndex) {
   return movesArray;
 }
 
-//Counterpart to removeBlockedByEnemy(), above
-function removeBlockedByFriendly(movesArray, friendlyPos, piece) {
+//Counterpart to removeBlockedByEnemy() above
+function removeBlockedByFriendly(movesArray, originIndex, piecesIndex, plusMinus) {
 
-  //removeBlockedByFriendly needs it's own set of data arrays to work with
-  let originIndex = movesArray.indexOf(piece.position);
-  let piecesIndex = makeIndex(movesArray, friendlyPos, originIndex, piece)
-  let plusMinus = piecesIndex.indexOf(originIndex);
-  
   //Make sure move falls exactly between two friendly pieces
   movesArray = movesArray.reduce(function(result, move) {
     if (movesArray.indexOf(move) < originIndex && movesArray.indexOf(move) > piecesIndex[plusMinus-1]) {
-      result.push(move)
+      result.push(move);
     } else if (movesArray.indexOf(move) > originIndex && movesArray.indexOf(move) < piecesIndex[plusMinus+1]) {
-      result.push(move) 
+      result.push(move);
     }
     return result;
   }, []);
 
   return movesArray;
 }
+
+//To identify all squares this piece prevents the enemy king moving to
+function getBlocksEnemyKing(movesArray, originIndex, piecesIndex, plusMinus) {
+  let blocksKing = []
+  //Make sure square isn't blocked by a friendly piece, if it is include the friendly piece's square
+  movesArray.forEach(move => {
+    if (movesArray.indexOf(move) < originIndex && movesArray.indexOf(move) >= piecesIndex[plusMinus-1]) {
+      blocksKing.push(move);
+    } else if (movesArray.indexOf(move) > originIndex && movesArray.indexOf(move) <= piecesIndex[plusMinus+1]) {
+      blocksKing.push(move);
+    }
+  })
+
+  return blocksKing;
+}
+
+//To recheck blocksEnemyKing moves if the king was present on the line, avoids king self-blocking check
+function getExtraBlockedKing(piece, movesArray, enemyKing) {
+  
+  //get the cells 1 space up and down the movesArray from the king's position
+  let kingIndex = movesArray.indexOf(enemyKing.position);
+  let moveIncrement = movesArray[kingIndex+1];
+  let moveDecrement = movesArray[kingIndex-1];
+
+  //if each of these cells don't contain the checking piece, and are not undefined, add to piece.blocksEnemyKing
+  if (moveIncrement != undefined && piece.position != moveIncrement) piece.blocksEnemyKing.push(moveIncrement) 
+  if (moveDecrement != undefined && piece.position != moveDecrement) piece.blocksEnemyKing.push(moveDecrement) 
+}
+
 
 //Fill index with piece locations, either same colour or opposite colour as required
 function makeIndex(movesArray, knownOccupied, originIndex, piece) {

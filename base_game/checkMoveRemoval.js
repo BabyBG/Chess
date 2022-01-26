@@ -1,5 +1,8 @@
+//Everything on this page is related to preventing illegal moves through checking the king
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Master function to create all piece.invalidMoves & then purge piece.possibleMoves & piece.moveTakesPiece
+//masterInvalidCalc is Master function to create all piece.invalidMoves related to check, 
+//& then purge piece.possibleMoves & piece.moveTakesPiece
 //usually called twice - once for black, once for white
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 function masterInvalidCalc(friendlyPieces, enemyPieces, king) {
@@ -8,16 +11,16 @@ function masterInvalidCalc(friendlyPieces, enemyPieces, king) {
   let useFriendlyPieces = friendlyPieces.filter(o => o.position != false);
   let useEnemyPieces = enemyPieces.filter(o => o.position != false);
 
-  //make an array of all occupied positions
-  let fOccupied = useFriendlyPieces.map(p => p.position);
-  let eOccupied = useEnemyPieces.map(o => o.position);
-
   //reset all piece.invalidMoves & find if king is in check
   useFriendlyPieces.forEach(o => o.invalidMoves = []);
   isKingChecked(king, useEnemyPieces);
 
   //king not needed in useFriendlyPieces anymore, so remove it
-  useFriendlyPieces.splice((useFriendlyPieces.length) -1, 1)
+  useFriendlyPieces.splice(useFriendlyPieces.indexOf(king), 1);
+
+  //make an array of all occupied positions
+  let fOccupied = useFriendlyPieces.map(p => p.position);
+  let eOccupied = useEnemyPieces.map(o => o.position);
 
   //find all lines of attack to the king in diagonals/rows/columns, then all pinned pieces
   let attackLines = kingAttackLines(king, useEnemyPieces);
@@ -29,7 +32,7 @@ function masterInvalidCalc(friendlyPieces, enemyPieces, king) {
     //if king is checked by multiple pieces simultaneously make everything not king-based an invalidMove
     if (king.inCheck.length > 1) {
       useFriendlyPieces.forEach(piece => piece.invalidMoves = piece.possibleMoves);
-    
+
     //if king is checked by only one piece make everything that doesnt block/take that piece invalid
     } else {
       let onlyTheseMovesValid = whenCheckedByOne(king);
